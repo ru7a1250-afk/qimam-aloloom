@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>قمم العلوم - تعلم ذاتي</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink-deep:   #c2185b;
+      --pink-main:   #e91e8c;
+      --pink-mid:    #f06292;
+      --pink-light:  #f8bbd0;
+      --pink-pale:   #fce4ec;
+      --pink-bg:     #fff0f5;
+      --gold:        #f9a825;
+      --gold-light:  #fff8e1;
+      --white:       #ffffff;
+      --text-dark:   #4a1942;
+      --text-mid:    #7b3f6e;
+      --shadow:      0 8px 32px rgba(194,24,91,0.18);
+      --radius:      18px;
+    }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--pink-bg);
+      min-height: 100vh;
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    /* ===== ROSE BACKGROUND ===== */
+    .rose-bg {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .rose-bg::before, .rose-bg::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.12;
+    }
+    .rose-bg::before {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, var(--pink-main), transparent 70%);
+      top: -150px; right: -150px;
+    }
+    .rose-bg::after {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, var(--pink-mid), transparent 70%);
+      bottom: -100px; left: -100px;
+    }
+
+    .floating-roses {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+    .rose-petal {
+      position: absolute;
+      font-size: 1.6rem;
+      opacity: 0.18;
+      animation: floatRose linear infinite;
+    }
+
+    @keyframes floatRose {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.18; }
+      90%  { opacity: 0.18; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ===== NAVBAR ===== */
+    #navbar {
+      display: none;
+      position: sticky; top: 0; z-index: 100;
+      background: linear-gradient(135deg, var(--pink-deep) 0%, var(--pink-main) 60%, var(--pink-mid) 100%);
+      padding: 14px 28px;
+      box-shadow: 0 4px 20px rgba(194,24,91,0.35);
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    #navbar.show { display: flex; }
+
+    .nav-brand {
+      font-size: 1.25rem; font-weight: 800;
+      color: var(--white);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-chapter {
+      background: rgba(255,255,255,0.22);
+      color: var(--white);
+      padding: 6px 18px;
+      border-radius: 30px;
+      font-size: 1rem; font-weight: 700;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      backdrop-filter: blur(6px);
+    }
+    .nav-score {
+      background: var(--gold);
+      color: var(--text-dark);
+      padding: 6px 18px;
+      border-radius: 30px;
+      font-size: 0.95rem; font-weight: 800;
+      box-shadow: 0 2px 10px rgba(249,168,37,0.4);
+    }
+    .nav-progress-wrap {
+      flex: 1; min-width: 120px; max-width: 200px;
+    }
+    .nav-progress-bar {
+      height: 10px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .nav-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), #fff176);
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+    .nav-progress-label {
+      color: rgba(255,255,255,0.9);
+      font-size: 0.78rem;
+      margin-top: 3px;
+      text-align: center;
+    }
+
+    /* ===== SCREENS ===== */
+    .screen {
+      display: none;
+      position: relative; z-index: 1;
+      min-height: calc(100vh - 0px);
+      padding: 30px 16px 50px;
+      animation: fadeIn 0.5s ease;
+    }
+    .screen.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== WELCOME SCREEN ===== */
+    #screen-welcome {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+    #screen-welcome.active { display: flex; }
+
+    .welcome-card {
+      background: var(--white);
+      border-radius: 28px;
+      padding: 50px 40px;
+      max-width: 560px; width: 100%;
+      box-shadow: var(--shadow), 0 0 0 4px var(--pink-light);
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 8px;
+      background: linear-gradient(90deg, var(--pink-deep), var(--pink-main), var(--pink-mid));
+    }
+
+    .welcome-icon {
+      font-size: 4rem;
+      margin-bottom: 12px;
+      display: block;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .welcome-title {
+      font-size: 2.2rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--pink-deep), var(--pink-main));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .welcome-subtitle {
+      font-size: 1rem; color: var(--text-mid);
+      line-height: 1.8; margin-bottom: 28px;
+    }
+    .welcome-label {
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--pink-deep); margin-bottom: 12px;
+    }
+    .name-input {
+      width: 100%;
+      padding: 14px 20px;
+      border: 2.5px solid var(--pink-light);
+      border-radius: 14px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1.1rem; font-weight: 500;
+      color: var(--text-dark);
+      background: var(--pink-pale);
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      text-align: center;
+      direction: rtl;
+    }
+    .name-input:focus {
+      border-color: var(--pink-main);
+      box-shadow: 0 0 0 4px rgba(233,30,140,0.12);
+      background: var(--white);
+    }
+    .name-input::placeholder { color: var(--pink-mid); }
+
+    .btn-start {
+      margin-top: 22px;
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--pink-deep), var(--pink-main));
+      color: var(--white);
+      border: none; border-radius: 14px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1.2rem; font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(233,30,140,0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(233,30,140,0.45);
+    }
+    .btn-start:active { transform: translateY(0); }
+
+    /* ===== CHAPTERS MAP ===== */
+    #screen-map {
+      max-width: 700px; margin: 0 auto;
+      padding-top: 40px;
+    }
+    #screen-map.active { display: block; }
+
+    .map-header {
+      text-align: center; margin-bottom: 32px;
+    }
+    .map-greeting {
+      font-size: 1.5rem; font-weight: 800;
+      color: var(--pink-deep);
+    }
+    .map-subtitle {
+      font-size: 1rem; color: var(--text-mid); margin-top: 6px;
+    }
+
+    .chapters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .chapter-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px 22px;
+      box-shadow: 0 4px 18px rgba(194,24,91,0.12);
+      border: 2px solid var(--pink-light);
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .chapter-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(194,24,91,0.22);
+      border-color: var(--pink-mid);
+    }
+    .chapter-card.completed {
+      border-color: var(--gold);
+      background: linear-gradient(135deg, #fff8e1, #ffffff);
+    }
+    .chapter-card.locked {
+      opacity: 0.55; cursor: not-allowed;
+    }
+    .chapter-card.locked:hover { transform: none; box-shadow: 0 4px 18px rgba(194,24,91,0.12); }
+
+    .chapter-icon { font-size: 2.4rem; margin-bottom: 10px; display: block; }
+    .chapter-name {
+      font-size: 1.15rem; font-weight: 800;
+      color: var(--text-dark); margin-bottom: 6px;
+    }
+    .chapter-desc {
+      font-size: 0.88rem; color: var(--text-mid); line-height: 1.6;
+    }
+    .chapter-badge {
+      position: absolute; top: 14px; left: 14px;
+      background: var(--gold);
+      color: var(--text-dark);
+      border-radius: 20px; padding: 3px 10px;
+      font-size: 0.78rem; font-weight: 800;
+    }
+    .chapter-lock-icon {
+      position: absolute; top: 14px; left: 14px;
+      font-size: 1.3rem;
+    }
+    .chapter-score-badge {
+      position: absolute; top: 14px; left: 14px;
+      background: linear-gradient(135deg, var(--gold), #ffca28);
+      color: var(--text-dark);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.82rem; font-weight: 800;
+    }
+
+    /* ===== QUIZ SCREEN ===== */
+    #screen-quiz {
+      max-width: 680px; margin: 0 auto;
+      padding-top: 30px;
+    }
+    #screen-quiz.active { display: block; }
+
+    .quiz-header {
+      text-align: center; margin-bottom: 28px;
+    }
+    .quiz-chapter-title {
+      font-size: 1.6rem; font-weight: 900;
+      color: var(--pink-deep); margin-bottom: 6px;
+    }
+    .quiz-q-counter {
+      font-size: 0.95rem; color: var(--text-mid);
+    }
+
+    .question-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--pink-light);
+      margin-bottom: 20px;
+    }
+    .question-number {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--pink-deep), var(--pink-main));
+      color: var(--white);
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      line-height: 36px;
+      text-align: center;
+      font-weight: 800; font-size: 1rem;
+      margin-bottom: 14px;
+    }
+    .question-text {
+      font-size: 1.15rem; font-weight: 700;
+      color: var(--text-dark); line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    .options-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .option-item {
+      background: var(--pink-pale);
+      border: 2px solid var(--pink-light);
+      border-radius: 12px;
+      padding: 14px 18px;
+      cursor: pointer;
+      font-size: 1.05rem; font-weight: 500;
+      color: var(--text-dark);
+      transition: all 0.25s;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .option-item:hover:not(.disabled) {
+      background: var(--pink-light);
+      border-color: var(--pink-mid);
+      transform: translateX(-4px);
+    }
+    .option-item.correct {
+      background: #e8f5e9; border-color: #43a047; color: #1b5e20;
+    }
+    .option-item.wrong {
+      background: #ffebee; border-color: #e53935; color: #b71c1c;
+    }
+    .option-item.disabled { cursor: default; }
+    .option-letter {
+      width: 30px; height: 30px; min-width: 30px;
+      border-radius: 50%;
+      background: var(--pink-light);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.9rem;
+      color: var(--pink-deep);
+      transition: background 0.25s;
+    }
+    .option-item.correct .option-letter { background: #43a047; color: white; }
+    .option-item.wrong .option-letter { background: #e53935; color: white; }
+
+    .feedback-msg {
+      margin-top: 16px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 1rem; font-weight: 700;
+      text-align: center;
+      display: none;
+    }
+    .feedback-msg.correct { background: #e8f5e9; color: #2e7d32; display: block; }
+    .feedback-msg.wrong   { background: #ffebee; color: #c62828; display: block; }
+    .feedback-detail {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      opacity: 0.88;
+      line-height: 1.6;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      padding-top: 8px;
+    }
+
+    .btn-next {
+      margin-top: 18px;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--pink-deep), var(--pink-main));
+      color: var(--white);
+      border: none; border-radius: 12px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1.1rem; font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(233,30,140,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: none;
+    }
+    .btn-next.show { display: block; }
+    .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(233,30,140,0.4); }
+
+    /* ===== RESULTS SCREEN ===== */
+    #screen-results {
+      max-width: 680px; margin: 0 auto;
+      padding-top: 30px;
+    }
+    #screen-results.active { display: block; }
+
+    .results-card {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 36px 30px;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--pink-light);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .results-title {
+      font-size: 1.8rem; font-weight: 900;
+      color: var(--pink-deep); margin-bottom: 6px;
+    }
+    .results-chapter {
+      font-size: 1.1rem; color: var(--text-mid); margin-bottom: 24px;
+    }
+    .score-circle {
+      width: 130px; height: 130px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--pink-deep), var(--pink-main));
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 8px 24px rgba(233,30,140,0.35);
+    }
+    .score-number {
+      font-size: 2.8rem; font-weight: 900; color: var(--white); line-height: 1;
+    }
+    .score-total {
+      font-size: 1rem; color: rgba(255,255,255,0.85); font-weight: 600;
+    }
+
+    .rank-badge {
+      display: inline-block;
+      padding: 10px 28px;
+      border-radius: 30px;
+      font-size: 1.2rem; font-weight: 800;
+      margin-bottom: 20px;
+    }
+    .rank-expert  { background: linear-gradient(135deg, var(--gold), #ffca28); color: var(--text-dark); }
+    .rank-good    { background: linear-gradient(135deg, #ab47bc, #ce93d8); color: white; }
+    .rank-rising  { background: linear-gradient(135deg, var(--pink-mid), var(--pink-light)); color: var(--text-dark); }
+
+    /* Results Analysis Table */
+    .analysis-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(194,24,91,0.1);
+    }
+    .analysis-table th {
+      background: linear-gradient(135deg, var(--pink-deep), var(--pink-main));
+      color: white;
+      padding: 12px 16px;
+      font-size: 1rem; font-weight: 700;
+      text-align: right;
+    }
+    .analysis-table td {
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      border-bottom: 1px solid var(--pink-light);
+      text-align: right;
+      line-height: 1.6;
+    }
+    .analysis-table tr:nth-child(even) td { background: var(--pink-pale); }
+    .analysis-table tr:last-child td { border-bottom: none; }
+    .analysis-table .label-cell {
+      font-weight: 700; color: var(--pink-deep); min-width: 130px;
+    }
+
+    .btn-certificate {
+      margin-top: 22px;
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--gold), #ffca28);
+      color: var(--text-dark);
+      border: none; border-radius: 12px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1.15rem; font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(249,168,37,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-certificate:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(249,168,37,0.5); }
+
+    /* ===== CERTIFICATE SCREEN ===== */
+    #screen-certificate {
+      max-width: 720px; margin: 0 auto;
+      padding-top: 30px;
+    }
+    #screen-certificate.active { display: block; }
+
+    .certificate-wrap {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 0;
+      box-shadow: var(--shadow), 0 0 0 6px var(--pink-light), 0 0 0 12px var(--pink-pale);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .cert-header {
+      background: linear-gradient(135deg, var(--pink-deep) 0%, var(--pink-main) 60%, var(--pink-mid) 100%);
+      padding: 28px 30px 22px;
+      text-align: center;
+      position: relative;
+    }
+    .cert-header-title {
+      font-size: 1.6rem; font-weight: 900; color: white;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .cert-header-sub {
+      font-size: 1rem; color: rgba(255,255,255,0.88); margin-top: 4px;
+    }
+    .cert-roses {
+      font-size: 1.8rem; letter-spacing: 8px; margin-bottom: 8px;
+    }
+
+    .cert-body {
+      padding: 32px 36px;
+      text-align: center;
+      background: linear-gradient(180deg, #fff0f5 0%, #ffffff 100%);
+    }
+    .cert-granted {
+      font-size: 1rem; color: var(--text-mid); margin-bottom: 10px;
+    }
+    .cert-name {
+      font-size: 2rem; font-weight: 900;
+      color: var(--pink-deep);
+      border-bottom: 3px solid var(--pink-light);
+      display: inline-block;
+      padding-bottom: 6px;
+      margin-bottom: 18px;
+    }
+    .cert-for {
+      font-size: 1rem; color: var(--text-mid); margin-bottom: 8px;
+    }
+    .cert-chapter {
+      font-size: 1.4rem; font-weight: 800;
+      color: var(--pink-main);
+      background: var(--pink-pale);
+      border-radius: 12px;
+      padding: 10px 24px;
+      display: inline-block;
+      margin-bottom: 18px;
+    }
+    .cert-program {
+      font-size: 0.95rem; color: var(--text-mid);
+      margin-bottom: 20px; line-height: 1.7;
+    }
+    .cert-quote {
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--pink-deep);
+      background: var(--pink-pale);
+      border-right: 4px solid var(--pink-main);
+      padding: 12px 18px;
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 24px;
+      text-align: right;
+    }
+
+    /* === CERT RESULT SECTION === */
+    .cert-result-section {
+      background: linear-gradient(135deg, #fff0f6, #fce4ec);
+      border: 2px solid var(--pink-light);
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin: 0 0 20px 0;
+      text-align: center;
+    }
+    .cert-score-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--pink-deep), var(--pink-main));
+      color: white;
+      border-radius: 50px;
+      padding: 10px 28px;
+      font-size: 1.2rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 14px rgba(233,30,140,0.3);
+    }
+    .cert-level-badge {
+      display: inline-block;
+      background: var(--pink-pale);
+      color: var(--pink-deep);
+      border: 2px solid var(--pink-main);
+      border-radius: 50px;
+      padding: 6px 20px;
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+    .cert-strengths-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin-top: 8px;
+    }
+    .cert-strengths-table th {
+      background: var(--pink-main);
+      color: white;
+      padding: 8px 12px;
+      font-weight: 700;
+      border-radius: 8px 8px 0 0;
+    }
+    .cert-strengths-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--pink-light);
+      color: var(--text-dark);
+      text-align: right;
+      line-height: 1.5;
+    }
+    .cert-strengths-table tr:last-child td { border-bottom: none; }
+    .cert-strengths-table tr:nth-child(even) td { background: #fff5f9; }
+    .strength-icon { color: #4caf50; font-weight: 800; }
+    .weakness-icon { color: #e91e8c; font-weight: 800; }
+
+    .cert-footer {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      padding: 20px 36px 28px;
+      border-top: 2px dashed var(--pink-light);
+      flex-wrap: wrap; gap: 16px;
+    }
+    .cert-footer-item { text-align: center; }
+    .cert-footer-label {
+      font-size: 0.82rem; color: var(--text-mid); margin-bottom: 4px;
+    }
+    .cert-footer-value {
+      font-size: 1rem; font-weight: 700; color: var(--text-dark);
+    }
+    .cert-seal {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--pink-deep), var(--pink-main));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 4px 16px rgba(233,30,140,0.35);
+    }
+
+    .cert-actions {
+      display: flex; gap: 14px; flex-wrap: wrap;
+    }
+    .btn-print {
+      flex: 1;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--pink-deep), var(--pink-main));
+      color: white;
+      border: none; border-radius: 12px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1.05rem; font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(233,30,140,0.3);
+      transition: transform 0.2s;
+    }
+    .btn-print:hover { transform: translateY(-2px); }
+    .btn-back-map {
+      flex: 1;
+      padding: 14px;
+      background: var(--white);
+      color: var(--pink-deep);
+      border: 2.5px solid var(--pink-main); border-radius: 12px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1.05rem; font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-back-map:hover {
+      background: var(--pink-pale);
+      transform: translateY(-2px);
+    }
+
+    /* ===== PRINT ===== */
+    @media print {
+      * { visibility: hidden !important; }
+      #screen-certificate, #screen-certificate * { visibility: visible !important; }
+      body { background: white !important; margin: 0; padding: 0; }
+      #screen-certificate {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        display: block !important;
+        padding: 20px !important;
+        box-sizing: border-box !important;
+      }
+      .cert-actions { display: none !important; visibility: hidden !important; }
+      .certificate-wrap {
+        box-shadow: none !important;
+        border: 3px solid #f48fb1 !important;
+        max-width: 700px !important;
+        margin: 0 auto !important;
+      }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 600px) {
+      .welcome-card { padding: 36px 22px; }
+      .welcome-title { font-size: 1.7rem; }
+      .cert-body { padding: 24px 20px; }
+      .cert-footer { padding: 16px 20px 22px; }
+      .cert-name { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Floating Roses Background -->
+<div class="rose-bg"></div>
+<div class="floating-roses" id="floatingRoses"></div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-brand">🌸 قمم العلوم</div>
+  <div class="nav-chapter" id="navChapterName">الفصل الأول</div>
+  <div class="nav-progress-wrap">
+    <div class="nav-progress-bar">
+      <div class="nav-progress-fill" id="navProgressFill" style="width:0%"></div>
+    </div>
+    <div class="nav-progress-label" id="navProgressLabel">0 / 15</div>
+  </div>
+  <div class="nav-score" id="navScore">⭐ 0 / 15</div>
+</nav>
+
+<!-- SCREEN: WELCOME -->
+<div class="screen active" id="screen-welcome">
+  <div class="welcome-card">
+    <span class="welcome-icon">🌸</span>
+    <h1 class="welcome-title">قمم العلوم</h1>
+    <p style="font-size:1rem;color:var(--pink-main);font-weight:700;margin-bottom:14px;">✨ تعلم ذاتي ✨</p>
+    <p class="welcome-subtitle">
+      أهلاً بكِ في رحلة التحدي.<br>
+      كل فصل تنهينه هو قمة جديدة تبلغينها،<br>
+      وستحصلين على <strong>شهادة فخر</strong> لكل قمة تجتازينها.
+    </p>
+    <p class="welcome-label">🌺 عالمتنا المبدعة، ادخلي اسمكِ الثلاثي لتبدأي جمع أوسمتكِ:</p>
+    <input
+      type="text"
+      class="name-input"
+      id="studentName"
+      placeholder="......................................................"
+      maxlength="60"
+    />
+    <button class="btn-start" onclick="startGame()">🚀 ابدأي رحلتكِ</button>
+  </div>
+</div>
+
+<!-- SCREEN: CHAPTERS MAP -->
+<div class="screen" id="screen-map">
+  <div class="map-header">
+    <div class="map-greeting" id="mapGreeting">أهلاً بكِ!</div>
+    <div class="map-subtitle">اختاري الفصل الذي تريدين دراسته 🗺️</div>
+  </div>
+  <div class="chapters-grid" id="chaptersGrid"></div>
+</div>
+
+<!-- SCREEN: QUIZ -->
+<div class="screen" id="screen-quiz">
+  <div class="quiz-header">
+    <div class="quiz-chapter-title" id="quizChapterTitle"></div>
+    <div class="quiz-q-counter" id="quizQCounter"></div>
+  </div>
+  <div id="questionContainer"></div>
+</div>
+
+<!-- SCREEN: RESULTS -->
+<div class="screen" id="screen-results">
+  <div class="results-card">
+    <div class="results-title">📊 تحليل نتائجكِ</div>
+    <div class="results-chapter" id="resultsChapterName"></div>
+    <div class="score-circle">
+      <div class="score-number" id="scoreNumber">0</div>
+      <div class="score-total">من 15</div>
+    </div>
+    <div class="rank-badge" id="rankBadge"></div>
+    <table class="analysis-table">
+      <thead>
+        <tr>
+          <th>البند</th>
+          <th>التفاصيل</th>
+        </tr>
+      </thead>
+      <tbody id="analysisBody"></tbody>
+    </table>
+    <button class="btn-certificate" onclick="showCertificate()">🏅 عرض شهادة الإنجاز</button>
+  </div>
+</div>
+
+<!-- SCREEN: CERTIFICATE -->
+<div class="screen" id="screen-certificate">
+  <div class="certificate-wrap" id="certWrap">
+    <div class="cert-header">
+      <div class="cert-roses">🌸🌸🌸</div>
+      <div class="cert-header-title">شهادة إنجاز قمة</div>
+      <div class="cert-header-sub">برنامج قمم العلوم - تعلم ذاتي</div>
+    </div>
+    <div class="cert-body">
+      <p class="cert-granted">نمنح هذه الشهادة بكل فخر للعالمة المبدعة:</p>
+      <div class="cert-name" id="certStudentName"></div>
+      <p class="cert-for">لاجتيازها بتفوق متطلبات فصل:</p>
+      <div class="cert-chapter" id="certChapterName"></div>
+      <p class="cert-program">
+        ضمن برنامج: <strong>قمم العلوم تعلم ذاتي</strong><br>
+        لقد أثبتِّ أنكِ قادرة على تخطي التحديات والوصول للقمة! 🔬
+      </p>
+      <!-- قسم النتيجة ونقاط القوة والضعف -->
+      <div class="cert-result-section" id="certResultSection">
+        <div class="cert-score-badge" id="certScoreBadge">🏆 النتيجة: <span id="certScoreText"></span></div>
+        <br>
+        <div class="cert-level-badge" id="certLevelBadge"></div>
+        <table class="cert-strengths-table" id="certStrengthsTable">
+          <thead>
+            <tr><th colspan="2">تقرير الأداء</th></tr>
+          </thead>
+          <tbody id="certStrengthsBody"></tbody>
+        </table>
+      </div>
+      <div class="cert-quote">
+        "العلم نور يضيء الطريق، وأنتِ من اختارت أن تسير فيه بشجاعة وإصرار."
+      </div>
+    </div>
+    <div class="cert-footer">
+      <div class="cert-footer-item">
+        <div class="cert-footer-label">تاريخ الإصدار</div>
+        <div class="cert-footer-value">21 / 02 / 2026م</div>
+      </div>
+      <div class="cert-seal">🏅</div>
+      <div class="cert-footer-item">
+        <div class="cert-footer-label">معلمة المادة</div>
+        <div class="cert-footer-value">سارة الغامدي</div>
+      </div>
+    </div>
+  </div>
+  <div class="cert-actions">
+    <button class="btn-print" onclick="printCertificate()">🖨️ طباعة الشهادة</button>
+    <button class="btn-back-map" onclick="backToMap()">🗺️ العودة لخريطة الفصول</button>
+  </div>
+</div>
+
+<script>
+/* ===================================================
+   DATA - CHAPTERS & QUESTIONS
+   =================================================== */
+const CHAPTERS = [
+  {
+    id: 1,
+   name: "الغلاف الجوي المتحرك",
+    icon: "🌪️",
+    desc: "استكشفي طبقات الغلاف الجوي وظواهر الطقس المذهلة",
+    questions: [
+      { q: "ما هو الغاز الأكثر توافراً في الغلاف الجوي للأرض بنسبة تصل إلى 78%؟", opts: ["الأكسجين","النيتروجين","ثاني أكسيد الكربون","الأرجون"], ans: 1, feedback: "يشكل النيتروجين نحو 78% من الغازات المكونة للغلاف الجوي، بينما يشكل الأكسجين نحو 21%." },
+      { q: "في أي طبقات الغلاف الجوي يتركز معظم الأوزون الجوي؟", opts: ["التروبوسفير","الميزوسفير","الستراتوسفير","الثيرموسفير"], ans: 2, feedback: "يتركز معظم الأوزون الجوي في طبقة الستراتوسفير، وهو الذي يمتص الأشعة فوق البنفسجية الضارة." },
+      { q: "ما العملية التي يتم من خلالها نقل الطاقة نتيجة اصطدام جزيئات الهواء ببعضها؟", opts: ["الحمل","الإشعاع","التوصيل","النتح"], ans: 2, feedback: "تسمى عملية نقل الطاقة نتيجة اصطدام الجزيئات ببعضها بعملية التوصيل الحراري." },
+      { q: "تسمى درجة الحرارة التي يصل عندها الهواء إلى حالة الإشباع بـ:", opts: ["درجة التجمد","درجة الندى","الرطوبة النسبية","درجة الغليان"], ans: 1, feedback: "درجة الندى هي درجة الحرارة التي يصل عندها الهواء إلى حالة الإشباع وتبدأ بعدها عملية التكثف." },
+      { q: "أي نوع من الغيوم يتكون من بلورات جليدية بسبب ارتفاعها العالي جداً؟", opts: ["الغيوم الطبقية","الغيوم الركامية","الغيوم الريشية","الضباب"], ans: 2, feedback: "تتكون الغيوم المرتفعة (الريشية) من بلورات جليدية بسبب وجودها على ارتفاعات كبيرة جداً." },
+      { q: "ماذا يسمى الحد الفاصل بين كتلتين هوائيتين مختلفتين في درجة حرارتهما؟", opts: ["تيار الحمل","الجبهة الهوائية","الضغط الجوي","قوة كوريولوس"], ans: 1, feedback: "عندما تلتقي كتل هوائية مختلفة في درجة حرارتها، تتكون عند الحد الفاصل بينها جبهة هوائية." },
+      { q: "الأعاصير التي تمتاز بقطر صغير وتدوم لفترة قصيرة ولكنها مدمرة جداً هي:", opts: ["الأعاصير البحرية (هوريكان)","الأعاصير القمعية (تورنادو)","العواصف الرعدية","المنخفضات الجوية"], ans: 1, feedback: "الإعصار القمعي (التورنادو) لا يتجاوز قطره 200م ويستمر لفترة قصيرة، لكنه مدمر جداً بسبب سرعة رياحه العالية." },
+      { q: "ما السبب الرئيسي وراء وجود ضغط للهواء؟", opts: ["بسبب درجة حرارة الشمس","بسبب وزن الهواء الناتج عن الجاذبية","بسبب الرطوبة النسبية","بسبب سرعة الرياح"], ans: 1, feedback: "يولد الهواء ضغطاً بسبب وزنه الناتج عن كتلة المادة المكونة له وتأثرها بالجاذبية الأرضية." },
+      { q: "كيف تساهم النباتات في دورة الماء في الطبيعة؟", opts: ["عن طريق التبخر من التربة","عن طريق عملية النتح","عن طريق عملية التكثف","عن طريق امتصاص ثاني أكسيد الكربون"], ans: 1, feedback: "يدخل الماء إلى الغلاف الجوي عن طريق النباتات في أثناء عملية تسمى \"النتح\"." },
+      { q: "الجهاز المستخدم لقياس سرعة الرياح يسمى:", opts: ["البارومتر","الترمومتر","الأنيمومتر","البوصلة"], ans: 2, feedback: "تقاس سرعة الرياح بجهاز يسمى \"أنيمومتر\"، حيث يحسب سرعة دوران الأكواب التي تلتقط الرياح." },
+      { q: "تحت أي ظروف جوية يتكون \"البَرَد\"؟", opts: ["في الأيام المشمسة الهادئة","داخل غيوم المزن الركامية بفعل الرياح القوية","عندما يكون الضغط الجوي مرتفعاً جداً","فقط في طبقة الإكسوسفير"], ans: 1, feedback: "يتكون البرد في غيوم المزن الركامية عندما ترفع الرياح القوية بلورات الثلج وتخفضها عدة مرات لتتجمد عليها قطرات الماء وتكبر." },
+      { q: "ما هو التأثير الناتج عن دوران الأرض حول نفسها على حركة الرياح؟", opts: ["زيادة رطوبة الهواء","انحراف الرياح لليمين شمالاً ولليسار جنوباً","توقف حركة الهواء عند خط الاستواء","تحويل الماء من الحالة الغازية إلى السائلة"], ans: 1, feedback: "تسمى هذه الظاهرة \"أثر قوة كوريولوس\"، وتؤدي لانحراف الهواء المتحرك نحو اليمين في النصف الشمالي ونحو اليسار في الجنوبي." },
+      { q: "يتميز مركز الضغط المنخفض (L) في النصف الشمالي من الأرض بـ:", opts: ["جو صافٍ ومشمس","تيارات هوائية هابطة نحو الأرض","دوران الرياح عكس اتجاه عقارب الساعة نحو المركز","انخفاض سرعة الجزيئات وتجمدها"], ans: 2, feedback: "في مناطق الضغط المنخفض، تصعد تيارات الهواء للأعلى وتدور عكس اتجاه عقارب الساعة، ويكون الجو غالباً غائماً وماطراً." },
+      { q: "إذا كانت الرطوبة النسبية في مدينة ما 100%، فماذا نستنتج عن درجة حرارة الهواء مقارنة بدرجة الندى؟", opts: ["درجة حرارة الهواء أعلى من درجة الندى","درجة حرارة الهواء تساوي درجة الندى","درجة حرارة الهواء أقل من درجة التجمد","الهواء جاف تماماً"], ans: 1, feedback: "عندما تصبح الرطوبة النسبية 100%، فهذا يعني أن الهواء تشبع بالكامل بالبخار، وهي الحالة التي تحدث بالضبط عند الوصول لدرجة \"الندى\"." },
+      { q: "لماذا تنخفض درجة الحرارة في طبقة التروبوسفير كلما ارتفعنا للأعلى رغم أننا نقترب من الشمس؟", opts: ["لأن الهواء في الأعلى أكثر كثافة","لأن مصدر تسخين هذه الطبقة هو سطح الأرض","بسبب وجود الأوزون الذي يبرد الهواء","بسبب سرعة الرياح العالية"], ans: 1, feedback: "معظم حرارة الغلاف الجوي في هذه الطبقة تأتي من سطح الأرض الذي امتص طاقة الشمس وسخّن الهواء الملامس له بالتوصيل، لذا تقل الحرارة كلما ابتعدنا عن السطح." },
+    ]
+  },
+  {
+    id: 2,
+    name: "استكشاف الفضاء",
+    icon: "🚀",
+    desc: "سافري إلى أعماق الكون واكتشفي أسراره",
+    questions: [
+      { q: "ما هو الترتيب الصحيح لطبقات الشمس من الداخل إلى الخارج؟", opts: ["الغلاف الضوئي، الغلاف اللوني، الإكليل","الإكليل، الغلاف اللوني، الغلاف الضوئي","الغلاف اللوني، الإكليل، الغلاف الضوئي","الغلاف الضوئي، الإكليل، الغلاف اللوني"], ans: 0, feedback: "يتكون الغلاف الجوي للشمس من ثلاث طبقات مرتبة من الداخل للخارج: الغلاف الضوئي، ثم اللوني، ثم الإكليل." },
+      { q: "أي من الكواكب التالية يطلق عليه الكوكب الأحمر؟", opts: ["الزهرة","المريخ","المشتري","زحل"], ans: 1, feedback: "يسمى المريخ بالكوكب الأحمر بسبب لون تربته الغنية بأكاسيد الحديد." },
+      { q: "ما هي الوحدة المستخدمة لقياس المسافات الشاسعة بين النجوم والمجرات؟", opts: ["الوحدة الفلكية","الكيلومتر","السنة الضوئية","الميل"], ans: 2, feedback: "السنة الضوئية هي المسافة التي يقطعها الضوء في سنة واحدة، وتستخدم لقياس المسافات خارج النظام الشمسي." },
+      { q: "يتميز كوكب الزهرة بأن:", opts: ["له أقمار عديدة","سطحه بارد جداً","حرارته عالية جداً بسبب غلافه الجوي السميك","هو أصغر كوكب في النظام الشمسي"], ans: 2, feedback: "الزهرة كوكب حار جداً لأن غلافه الجوي الكثيف يحبس حرارة الشمس (تأثير الصوبة الزجاجية)." },
+      { q: "أي الأجرام التالية تقع في حزام الكويكبات؟", opts: ["بين المشتري وزحل","بين الأرض والمريخ","بين المريخ والمشتري","خلف كوكب نبتون"], ans: 2, feedback: "تقع معظم الكويكبات في منطقة تسمى حزام الكويكبات بين مداري المريخ والمشتري." },
+      { q: "المجرة التي ينتمي إليها نظامنا الشمسي هي:", opts: ["مجرة أندروميدا","مجرة درب التبانة","مجرة السحابة الماجلانية","مجرة العين السوداء"], ans: 1, feedback: "تقع شمسنا والأرض وبقية الكواكب ضمن مجرة درب التبانة، وهي مجرة لولبية الشكل." },
+      { q: "ما الذي يميز الكواكب الخارجية (الغازية) عن الكواكب الداخلية؟", opts: ["صغر حجمها","قربها من الشمس","وجود حلقات ضخمة وأقمار كثيرة","سطحها الصخري الصلب"], ans: 2, feedback: "الكواكب الخارجية عملاقة، وتتكون من الغازات، وتمتلك حلقات وأقماراً عديدة." },
+      { q: "تسمى الكتل الصخرية التي تسقط على سطح الأرض:", opts: ["الشهب","النيازك","المذنبات","الكويكبات"], ans: 1, feedback: "يسمى الجرم نيزكاً فقط إذا تمكن من اختراق الغلاف الجوي والوصول إلى سطح الأرض." },
+      { q: "أي الكواكب التالية يشتهر بحلقاته الرائعة والواضحة؟", opts: ["أورانوس","زحل","نبتون","المشتري"], ans: 1, feedback: "يشتهر زحل بنظامه الحلقي المكون من مليارات القطع الجليدية والصخرية." },
+      { q: "المنظار الفلكي الذي يستخدم المرايا لتجميع الضوء يسمى:", opts: ["المنظار الكاسر","المنظار العاكس","المنظار الراديوي","القمر الاصطناعي"], ans: 1, feedback: "المنظار العاكس يستخدم مرآة مقعرة لتجميع الضوء من الأجرام البعيدة." },
+      { q: "يتكون المذنب بشكل رئيسي من:", opts: ["صخور ومعادن فقط","غازات ملتهبة","ثلج وغبار وصخور","ماء سائل"], ans: 2, feedback: "المذنب جسم مكون من جليد وغبار وصخور يدور حول الشمس في مدار إهليلجي." },
+      { q: "ما هي أكبر كواكب المجموعة الشمسية حجماً؟", opts: ["زحل","المشتري","نبتون","الأرض"], ans: 1, feedback: "المشتري هو أضخم كوكب في النظام الشمسي، وكتلته أكبر من ضعف كتلة جميع الكواكب الأخرى مجتمعة." },
+      { q: "تعتبر الشمس نجماً من النوع:", opts: ["العملاق الأحمر","المتوسط الحجم","القزم الأبيض","المستعر الأعظم"], ans: 1, feedback: "الشمس نجم متوسط الحجم، وحرارته متوسطة مقارنة بالنجوم الأخرى." },
+      { q: "لماذا نرى النجوم وكأنها تتحرك في السماء ليلاً، بينما هي في الواقع ثابتة بالنسبة لبعضها البعض؟", opts: ["لأن النجوم تدور حول الأرض بسرعة عالية","بسبب دوران الأرض حول محورها","بسبب جاذبية القمر التي تحرك الضوء","لأن الغلاف الجوي للأرض يتحرك باستمرار"], ans: 1, feedback: "الحركة الظاهرية للنجوم ناتجة عن دوران الأرض حول نفسها، مما يجعلنا نشعر أن السماء هي التي تدور." },
+      { q: "لماذا تفضل وكالات الفضاء وضع المناظير الفلكية في الفضاء بدلاً من سطح الأرض؟", opts: ["لتكون أقرب إلى النجوم فتبدو أكبر","لتجنب تداخل الغلاف الجوي وتشويهه للصور","لأن تكلفة تشغيلها في الفضاء أقل","لأن الضوء لا ينتقل في الهواء على سطح الأرض"], ans: 1, feedback: "الغلاف الجوي للأرض يمتص ويشتت الضوء ويسبب اضطرابات تجعل الصور غير واضحة، لذا توضع في الفضاء للحصول على صور نقية جداً." },
+    ]
+  },
+  {
+    id: 3,
+    name: "الخلايا لبنات الحياة",
+    icon: "🧬",
+    desc: "اكتشفي أسرار الخلايا لبنات الحياة",
+    questions: [
+      { q: "ما هي أصغر وحدة في المخلوق الحي تفرزها خلايا أخرى وتؤدي وظائف الحياة؟", opts: ["النسيج","الخلية","العضو","الجهاز"], ans: 1, feedback: "الخلية هي اللبنة الأساسية للحياة وأصغر وحدة في المخلوق الحي تستطيع القيام بجميع العمليات الحيوية." },
+      { q: "أي من الأجزاء التالية يوجد في الخلية النباتية ولا يوجد في الخلية الحيوانية؟", opts: ["الغشاء البلازمي","النواة","البلاستيدات الخضراء","السيتوبلازم"], ans: 2, feedback: "تتميز الخلية النباتية بوجود البلاستيدات الخضراء للقيام بالبناء الضوئي، وجدار خلوي يعطيها شكلاً محدداً." },
+      { q: "ما وظيفة النواة في الخلية؟", opts: ["حماية الخلية","تخزين الماء","تنظيم معظم أنشطة الخلية","إنتاج الطاقة"], ans: 2, feedback: "تعمل النواة كمركز تحكم للخلية، حيث تنظم التفاعلات الكيميائية والأنشطة الحيوية وتحتوي على المادة الوراثية." },
+      { q: "العضو الذي يقوم بعملية التنفس وإنتاج الطاقة داخل الخلية هو:", opts: ["الفجوة","الميتوكندريا","الجدار الخلوي","الكروموسوم"], ans: 1, feedback: "الميتوكندريا هي بيوت الطاقة حيث تحدث فيها التفاعلات الكيميائية لإطلاق الطاقة من الغذاء." },
+      { q: "تسمى مجموعة الخلايا المتشابهة التي تؤدي الوظيفة نفسها:", opts: ["عضواً","نسيجاً","جهازاً","مخلوقاً حياً"], ans: 1, feedback: "النسيج هو المستوى الثاني من التنظيم، ويتكون من مجموعة خلايا متشابهة تعمل معاً." },
+      { q: "من بنود نظرية الخلية أن:", opts: ["الخلايا تنشأ عن خلايا مماثلة لها","جميع المخلوقات تتكون من خلية واحدة فقط","الخلايا يمكن رؤيتها بالعين المجردة دائماً","الجمادات تتكون من خلايا"], ans: 0, feedback: "تنص نظرية الخلية على أن جميع المخلوقات تتكون من خلايا، وهي الوحدة الأساسية، وتنتج عن خلايا سابقة." },
+      { q: "ما هو الجزء الذي ينظم مرور المواد من الخلية وإليها؟", opts: ["الفجوة العصارية","الغشاء البلازمي","النوية","الميتوكندريا"], ans: 1, feedback: "الغشاء البلازمي يمتاز بخاصية النفاذية الاختيارية التي تسمح بمرور مواد معينة ومنع أخرى." },
+      { q: "عملية انقسام النواة إلى نواتين متماثلتين تسمى:", opts: ["التنفس الخلوي","الانقسام المتساوي","البناء الضوئي","التكاثر الجنسي"], ans: 1, feedback: "الانقسام المتساوي يضمن حصول كل خلية جديدة على نفس عدد الكروموسومات الموجودة في الخلية الأصلية." },
+      { q: "أي مما يلي يمثل الترتيب الصحيح لمستويات التنظيم في المخلوقات الحية؟", opts: ["نسيج -> خلية -> جهاز -> عضو","خلية -> نسيج -> عضو -> جهاز","عضو -> جهاز -> نسيج -> خلية","جهاز -> عضو -> خلية -> نسيج"], ans: 1, feedback: "يبدأ التنظيم بالخلية، ثم الأنسجة، ثم الأعضاء، وصولاً إلى الأجهزة الحيوية." },
+      { q: "ما هي المادة الوراثية المحمولة على الكروموسومات وتحدد صفات المخلوق الحي؟", opts: ["DNA","ATP","النشا","الأكسجين"], ans: 0, feedback: "الحمض النووي (DNA) هو المركب الكيميائي الذي يحمل الشفرة الوراثية للمخلوق الحي." },
+      { q: "وظيفة الفجوات داخل الخلية هي:", opts: ["إنتاج البروتين","تخزين الغذاء والماء والفضلات","تغليف المواد ونقلها","التحكم في انقسام الخلية"], ans: 1, feedback: "تعمل الفجوات كمستودعات تخزين داخل الخلية للمواد المختلفة." },
+      { q: "أي عالم هو أول من استعمل كلمة خلية؟", opts: ["لويس باستير","روبرت هوك","جريجور مندل","ألبرت أينشتاين"], ans: 1, feedback: "شاهد روبرت هوك خلايا الفلين تحت المجهر عام 1665م وأطلق عليها اسم خلايا." },
+      { q: "المادة الهلامية التي تملأ الفراغ بين الغشاء والنواة وتسبح فيها العضيات هي:", opts: ["الغلاف النووي","السيتوبلازم","الجدار الخلوي","الكروماتين"], ans: 1, feedback: "السيتوبلازم مادة شبه سائلة تحتوي على معظم المواد الكيميائية للخلية وتحدث فيه معظم العمليات." },
+      { q: "لماذا تحتوي خلايا العضلات في جسم الإنسان على أعداد كبيرة من الميتوكندريا مقارنة بالخلايا الأخرى؟", opts: ["لأنها تحتاج لمساحة أكبر لتخزين الماء","لأن العضلات تحتاج إلى طاقة كبيرة للقيام بالانقباض والانبساط","لتسهيل عملية التخلص من الفضلات الصلبة","لكي تتمكن من تغيير لونها"], ans: 1, feedback: "نظراً لأن الميتوكندريا هي مصدر الطاقة، فإن الخلايا النشطة جداً كخلايا العضلات تحتاج للمزيد منها لتلبية احتياجاتها العالية من الطاقة." },
+      { q: "ماذا يحدث إذا فقدت الخلية الغشاء البلازمي وظل السيتوبلازم مكشوفاً؟", opts: ["ستنمو الخلية بشكل أسرع","ستفقد الخلية السيطرة على دخول وخروج المواد وتتحلل","ستتحول إلى خلية نباتية وتصنع غذاءها","لن يتغير شيء في وظائف الخلية"], ans: 1, feedback: "بدون الغشاء البلازمي، تفقد الخلية حمايتها وتوازنها الداخلي (النفاذية الاختيارية)، مما يؤدي لموتها فوراً بسبب تسرب المحتويات ودخول السموم." },
+    ]
+  },
+  {
+    id: 4,
+    name: "الحيوانات اللافقارية",
+    icon: "🦋",
+    desc: "تعرفي على عالم الحيوانات اللافقارية المذهل",
+    questions: [
+      { q: "ما الصفة التي تشترك فيها جميع الحيوانات اللافقارية؟", opts: ["لها عمود فقري","ليس لها عمود فقري","تعيش على اليابسة فقط","تتنفس عن طريق الخياشيم دائماً"], ans: 1, feedback: "اللافقاريات هي حيوانات تفتقر لوجود العمود الفقري، وتشكل حوالي 97% من أنواع الحيوانات." },
+      { q: "أي من الحيوانات التالية يمتلك تماثلاً شعاعياً؟", opts: ["الإسفنج","دودة الأرض","قنديل البحر","الحلزون"], ans: 2, feedback: "الحيوانات ذات التماثل الشعاعي لها أجزاء جسم مرتبة بشكل دائري حول نقطة مركزية، مثل اللاسعات وشوكيات الجلد." },
+      { q: "كيف يحصل الإسفنج على غذائه من الماء؟", opts: ["عن طريق مطاردة الفريسة","عن طريق تصفية الغذاء من الماء المار عبر ثقوبه (ترشيح)","عن طريق البناء الضوئي","عن طريق امتصاص الغذاء من التربة"], ans: 1, feedback: "الإسفنجيات حيوانات جالسة تحصل على غذائها عن طريق تصفية الدقائق الغذائية من الماء الذي يتدفق عبر مسام أجسامها." },
+      { q: "تستخدم اللاسعات أجزاءً خاصة لشل حركة فريستها تسمى:", opts: ["اللوامس المزودة بخلايا لاسعة","الأقدام الأنبوبية","الأشواك الصلبة","السوط"], ans: 0, feedback: "تطلق الخلايا اللاسعة الموجودة على اللوامس سموماً تشل حركة الفريسة لتمكين الحيوان من التغذية." },
+      { q: "أي من الديدان التالية تعيش متطفلة داخل جسم العائل وتعتمد عليه في الغذاء؟", opts: ["دودة الأرض","الدودة الشريطية","دودة القز","العلق الطبي"], ans: 1, feedback: "الديدان المفلطحة كالشريطية تعيش متطفلة في أمعاء العائل وتعتمد عليه في الحصول على الغذاء المهضوم." },
+      { q: "ما هو العضو الذي تستخدمه بعض الرخويات لطحن الطعام وكشطه؟", opts: ["الصدفة","العباءة","الطاحنة","القدم العضلية"], ans: 2, feedback: "الطاحنة عضو يشبه اللسان يحتوي على صفوف من البروزات القوية التي تشبه الأسنان لجرش الغذاء." },
+      { q: "تمتاز الديدان الحلقية (مثل دودة الأرض) بأن جسمها يتكون من:", opts: ["قطعة واحدة صلبة","حلقات أو قطع متكررة","طبقة خارجية من الشمع","أشواك فقط"], ans: 1, feedback: "يتكون جسم الديدان الحلقية من قطع أو حلقات متكررة تمنحها مرونة كبيرة في الحركة." },
+      { q: "تسمى عملية تبديل الهيكل الخارجي القديم بهيكل جديد في المفصليات بـ:", opts: ["التحول","الانسلاخ","التكاثر","الإخصاب"], ans: 1, feedback: "نظراً لأن الهيكل الخارجي صلب ولا ينمو، يجب على الحيوان التخلص منه دورياً ليفسح مجالاً لنمو جسمه." },
+      { q: "أي من المجموعات التالية يمتلك ثماني أرجل وجسمه مقسم إلى جزئين فقط؟", opts: ["الحشرات","القشريات","العنكبوتيات","عديدة الأرجل"], ans: 2, feedback: "العناكب لها ثماني أرجل وجسم يتكون من رأس-صدر وبطن، وهي تفتقر لوجود قرون الاستشعار." },
+      { q: "تمر الفراشة في دورة حياتها بأربع مراحل (بيضة، يرقات، عذراء، حشرة كاملة)، ماذا يسمى هذا التحول؟", opts: ["تحول ناقص","تحول كامل","انسلاخ","تكاثر لا جنسي"], ans: 1, feedback: "التحول الكامل يتضمن مراحل يتغير فيها شكل الحيوان تماماً بين كل مرحلة وأخرى." },
+      { q: "كيف يتنفس جراد البحر الذي يعيش في الماء؟", opts: ["عن طريق الرئتين","عن طريق الخياشيم","عن طريق الجلد مباشرة","عن طريق الثغور التنفسية"], ans: 1, feedback: "القشريات المائية تستخدم الخياشيم لتبادل الغازات الذائبة في الماء." },
+      { q: "تمتلك شوكيات الجلد (مثل نجم البحر) جهازاً فريداً للحركة والتغذية يسمى:", opts: ["الجهاز الهضمي","الجهاز الوعائي المائي","الجهاز العصبي","الهيكل الخارجي"], ans: 1, feedback: "يعمل الجهاز الوعائي المائي عن طريق ضغط الماء داخل الأقدام الأنبوبية لتمكين الحيوان من الحركة." },
+      { q: "أي من الرخويات التالية يعتبر من رأسيات الأرجل ويمتاز بالذكاء؟", opts: ["الحلزون","الأخطبوط","المحار","بلح البحر"], ans: 1, feedback: "رأسيات الأرجل هي رخويات معقدة لها أقدام متصلة بالرأس وتستخدم نظام الدفع النفاث للسباحة." },
+      { q: "لماذا تعد دودة الأرض مهمة جداً للمزارعين، وماذا سيحدث للتربة لو اختفت تماماً؟", opts: ["لأنها تأكل الحشرات الضارة بالزرع","لأن حركتها تهوي التربة وفضلاتها تزيد خصوبتها؛ واختفاؤها سيؤدي لتصلب التربة ونقص المحصول","لأنها تفرز مواد تقتل الأعشاب الضارة","لأنها تجذب الطيور التي تساعد في التلقيح"], ans: 1, feedback: "دودة الأرض تحسن نفاذية الهواء والماء في التربة وتعتبر فضلاتها سماداً غنياً بالنيتروجين." },
+      { q: "قارن بين الهيكل الخارجي للمفصليات والعمود الفقري للإنسان من حيث النمو؛ أيهما يمثل عائقاً للنمو ولماذا؟", opts: ["الهيكل الداخلي ينمو مع الجسم باستمرار","الهيكل الخارجي يمثل عائقاً للنمو لأنه صلب ولا يتمدد، مما يضطر الحيوان للانسلاخ","الهيكل الخارجي أخف وزناً ويسهل الحركة أكثر","كلاهما يتكون من نفس المواد الكيميائية"], ans: 1, feedback: "الهيكل الخارجي صلب جداً للحماية، لكن الحيوان يضطر لخلعه دورياً (الانسلاخ) لكي يتمكن جسمه من زيادة الحجم." },
+    ]
+  },
+  {
+    id: 5,
+    name: "الحيوانات الفقارية",
+    icon: "🦁",
+    desc: "اكتشفي تنوع الحيوانات الفقارية وخصائصها",
+    questions: [
+      { q: "ما الصفة المشتركة التي تجمع بين جميع الحبليات في مرحلة ما من نموها؟", opts: ["وجود حبل ظهري وحبل عصبي وشقوق بلعومية","وجود ريش يغطي أجسامها","القدرة على الطيران","العيش في الماء فقط"], ans: 0, feedback: "تمتاز الحبليات بامتلاكها حبل ظهري وحبل عصبي وشقوق بلعومية تظهر في مراحل نموها الأولى." },
+      { q: "أي من الأسماك التالية تنتمي إلى مجموعة الأسماك اللافكية؟", opts: ["القرش","الجلكي","الهامور","السلمون"], ans: 1, feedback: "الأسماك اللافكية تمتاز بجسم أنبوبي طويل وقشور رقيقة، ومن أمثلتها سمك الجلكي." },
+      { q: "ما هي الوظيفة الرئيسية لمثانة العوم في الأسماك العظمية؟", opts: ["المساعدة في التنفس","التحكم في عمق الغوص في الماء","هضم الطعام","إنتاج البويضات"], ans: 1, feedback: "مثانة العوم هي كيس غازي يسمح للسمكة بالتحكم في الارتفاع والانخفاض داخل الماء." },
+      { q: "تمر البرمائيات بمرحلة تحول خلال دورة حياتها، ماذا يسمى صغير الضفدع الذي يعيش في الماء؟", opts: ["اليرقة","أبو ذنيبة","الزاحف","الفرخ"], ans: 1, feedback: "يفقس بيض الضفدع عن أبو ذنيبة الذي يعيش في الماء ويتنفس بالخياشيم قبل أن يتحول لحيوان بالغ." },
+      { q: "لماذا تسمى الطيور والحيوانات الثديية بحيوانات ذات درجة حرارة ثابتة؟", opts: ["لأن حرارتها تتغير بتغير البيئة","لأنها تحافظ على درجة حرارة أجسامها ثابتة داخلياً","لأنها تعيش في المناطق الباردة فقط","لأنها لا تتنفس الهواء"], ans: 1, feedback: "الحيوانات ثابتة درجة الحرارة لا تتأثر حرارة أجسامها بالوسط المحيط بل تبقى ثابتة." },
+      { q: "أي من التالي يعد من الخصائص الفريدة للطيور وتساعدها على الطيران؟", opts: ["العظام الثقيلة والصلبة","وجود الريش والعظام المجوفة","العيش في مجموعات","وضع البيض في الماء"], ans: 1, feedback: "الريش والعظام الخفيفة المجوفة هي تكيفات أساسية تمكّن الطيور من الطيران." },
+      { q: "ما هي المادة التي يتكون منها هيكل سمكة القرش؟", opts: ["العظام الصلبة","الغضروف","القشور","العضلات فقط"], ans: 1, feedback: "ينتمي القرش للأسماك الغضروفية التي يكون هيكلها مرناً ومكوناً من الغضاريف." },
+      { q: "تضع الزواحف بيوضاً تمتاز بوجود قشرة صلبة وغشاء أمنيون، ما الفائدة من ذلك؟", opts: ["لزيادة وزن البيضة","لحماية الجنين ومنع جفاف البيضة على اليابسة","لتسهيل عملية الفقس","لجذب المفترسات"], ans: 1, feedback: "البيوض الأمنيونية تكيفت للحياة على اليابسة حيث توفر بيئة محمية للجنين وتمنع الجفاف." },
+      { q: "أي مجموعة من الثدييات تضع بيوضاً بدلاً من ولادة صغار حية؟", opts: ["الثدييات المشيمية","الثدييات الأولية","الثدييات الكيسية","الحيتان"], ans: 1, feedback: "الثدييات الأولية، مثل منقار البط، هي المجموعة الوحيدة التي تضع بيوضاً ذات قشرة جلدية." },
+      { q: "ما هي الوظيفة الأساسية للحجاب الحاجز في الثدييات؟", opts: ["هضم البروتينات","المساعدة في عملية التنفس (الشهيق والزفير)","تقوية العظام","تنظيم ضربات القلب"], ans: 1, feedback: "الحجاب الحاجز عضلة قوية تساعد في انقباض وانبساط الرئتين لتبادل الغازات." },
+      { q: "أي من الحيوانات التالية يمتلك كيساً (جراباً) ينمو فيه الصغير بعد الولادة؟", opts: ["الفيل","الكنغر","الدولفين","الأسد"], ans: 1, feedback: "الكنغر من الثدييات الكيسية التي تلد صغاراً غير مكتملي النمو يواصلون نموهم داخل الجراب." },
+      { q: "ما الذي يميز قلب التماسيح عن بقية الزواحف؟", opts: ["يتكون من حجرة واحدة","يتكون من أربع حجرات","لا يوجد فيه صمامات","يعمل بدون دم"], ans: 1, feedback: "التماسيح تمتاز بقلب متطور مكون من أربع حجرات يفصل تماماً بين الدم المؤكسج وغير المؤكسج." },
+      { q: "أي جزء في جسم الطائر يقوم بطحن الطعام بقوة؟", opts: ["الحوصلة","القانصة","المنقار","الأمعاء"], ans: 1, feedback: "القانصة عضو عضلي قوي يقوم بطحن الغذاء، وأحياناً بمساعدة حجارة صغيرة يبتلعها الطائر." },
+      { q: "لماذا تعد البرمائيات مؤشراً حيوياً على صحة البيئة، وكيف يؤثر تلوث المياه عليها بشكل أكبر من الزواحف؟", opts: ["لأنها تأكل الحشرات فقط","لأن جلدها رقيق ونفاذ يمتص الملوثات من الماء والهواء مباشرة","لأنها تعيش في جميع القارات","لأن حجمها صغير جداً"], ans: 1, feedback: "تمتاز البرمائيات بجلد رقيق جداً يستخدم في التنفس، مما يجعله حساساً جداً لامتصاص الملوثات الذائبة في الماء." },
+      { q: "لو تخيلنا طائراً عظامُه صلبة وغير مجوفة، فما هو العجز الذي سيواجهه وكيف سيؤثر ذلك على نمط حياته؟", opts: ["سيطير بسرعة أكبر","سيفقد القدرة على الطيران بسبب الوزن الزائد وسيتجه للعيش الدائم على الأرض","سيحتاج لأكل كميات أقل من الطعام","ستنمو له زعانف بدلاً من الأجنحة"], ans: 1, feedback: "خفة الوزن شرط أساسي للطيران؛ فالعظام المجوفة تقلل الوزن مع الحفاظ على القوة اللازمة لحركة الأجنحة." },
+    ]
+  },
+  {
+    id: 6,
+    name: "علم البيئة",
+    icon: "🌍",
+    desc: "استكشفي علاقات الكائنات الحية ببيئتها",
+    questions: [
+      { q: "ما العلم الذي يدرس التفاعلات بين المخلوقات الحية وعلاقتها ببيئتها؟", opts: ["علم الأحياء","علم البيئة","علم الكيمياء","علم الفلك"], ans: 1, feedback: "علم البيئة هو الدراسة العلمية للتفاعلات التي تحدث بين المخلوقات الحية وبيئتها." },
+      { q: "أي مما يلي يمثل عوامل حيوية في النظام البيئي؟", opts: ["الماء والهواء","التربة والحرارة","النباتات والحيوانات","ضوء الشمس والمعادن"], ans: 2, feedback: "العوامل الحيوية هي المخلوقات الحية المكونة للجزء الحي من النظام البيئي." },
+      { q: "يطلق على جميع أفراد النوع الواحد التي تعيش في مكان وزمان محددين اسم:", opts: ["الجماعة الحيوية","المجتمع الحيوي","النظام البيئي","الغلاف الحيوي"], ans: 0, feedback: "الجماعة الحيوية هي أفراد نوع واحد من المخلوقات الحية التي تعيش في المكان نفسه وفي الوقت نفسه." },
+      { q: "ما هو أكبر مستوى تنظيم في علم البيئة ويشمل جميع الأنظمة البيئية على الأرض؟", opts: ["المجتمع الحيوي","الغلاف الحيوي","الجماعة الحيوية","الموطن"], ans: 1, feedback: "الغلاف الحيوي هو الجزء من الأرض الذي تدعمه الحياة، وهو أكبر مستوى تنظيم بيئي." },
+      { q: "تسمى العلاقة التي يستفيد فيها كلا المخلوقين الحيين بـ:", opts: ["التطفل","التعايش","تبادل المنفعة","الافتراس"], ans: 2, feedback: "تبادل المنفعة هي علاقة تعاونية يستفيد فيها كلا الطرفين، مثل العلاقة بين النحل والأزهار." },
+      { q: "المخلوقات الحية التي تصنع غذاءها بنفسها باستخدام طاقة الشمس تسمى:", opts: ["المستهلكات","المنتجات","المحللات","المفترسات"], ans: 1, feedback: "المنتجات هي مخلوقات حية تصنع غذاءها بنفسها من خلال عملية البناء الضوئي." },
+      { q: "ماذا يسمى النموذج الذي يوضح مساراً واحداً لانتقال الطاقة من مخلوق لآخر؟", opts: ["الشبكة الغذائية","الهرم البيئي","السلسلة الغذائية","الدورة الحيوية"], ans: 2, feedback: "السلسلة الغذائية هي نموذج بسيط يظهر انتقال طاقة الغذاء من مخلوق حي إلى آخر." },
+      { q: "أي المخلوقات التالية يعتبر من المحللات؟", opts: ["الأسد والذئب","البكتيريا والفطريات","الأشجار والأعشاب","الأرانب والغزلان"], ans: 1, feedback: "المحللات هي مخلوقات تستهلك الفضلات والمخلوقات الميتة وتفككها لتعيد المواد للتربة." },
+      { q: "يسمى المكان الذي يعيش فيه المخلوق الحي ويحصل منه على الغذاء والمأوى بـ:", opts: ["الإطار البيئي","الموطن","المجتمع","النظام"], ans: 1, feedback: "الموطن هو المكان الذي يعيش فيه المخلوق الحي، كالغابة للنمر أو المحيط للحوت." },
+      { q: "ما الذي يحدث للجماعة الحيوية عندما تزيد الموارد (غذاء وماء) وتتحسن الظروف؟", opts: ["يقل حجمها","يزداد حجمها","تهاجر من المكان","تنقرض"], ans: 1, feedback: "توفر الموارد تزيد من معدل المواليد وتقلل الوفيات مما يؤدي لنمو الجماعة." },
+      { q: "أي العوامل التالية يعتبر عامل تحديد لنمو الجماعات الحيوية؟", opts: ["كمية الغذاء المتاحة","عدد النجوم في السماء","لون التربة","شكل الصخور"], ans: 0, feedback: "العامل المحدد هو أي عامل حيوي أو غير حي يحد من زيادة أعداد أفراد الجماعة، مثل الغذاء والماء والمساحة." },
+      { q: "المخلوقات الحية التي تتغذى على النباتات والحيوانات معاً تسمى:", opts: ["آكلات أعشاب","آكلات لحوم","حيوانات مزدوجة التغذية (قارتة)","منتجات"], ans: 2, feedback: "الحيوانات مزدوجة التغذية هي التي تستهلك المنتجات والمستهلكات معاً، مثل الإنسان والدب." },
+      { q: "ماذا يحدث للطاقة كلما انتقلنا من مستوى إلى مستوى أعلى في الهرم البيئي؟", opts: ["تزداد","تبقى ثابتة","تتناقص","تختفي تماماً"], ans: 2, feedback: "تتناقص الطاقة المتاحة كلما صعدنا في الهرم البيئي لأن جزءاً كبيراً منها يُفقد كحرارة." },
+      { q: "لماذا لا يقتل الطفيل عائله فوراً في معظم الحالات؟", opts: ["لأن الطفيل يشعر بالخوف من موت العائل","لأن موت العائل يعني فقدان الطفيل لمصدر غذائه ومأواه، مما قد يؤدي لموت الطفيل أيضاً","لأن العائل يدافع عن نفسه بقوة","لأن الطفيليات لا تتغذى على الأنسجة الحية"], ans: 1, feedback: "العلاقة التطفلية تعتمد على بقاء العائل حياً لأطول فترة ممكنة لضمان استمرارية حياة الطفيل وتكاثره." },
+      { q: "لو اختفت المحللات تماماً من نظام بيئي معين، فما هو الأثر الأخطر الذي سيواجهه هذا النظام على المدى الطويل؟", opts: ["ستزداد أعداد المنتجات بشكل كبير","ستتراكم جثث المخلوقات الميتة وتنفد المواد الغذائية الأساسية من التربة لأنها لا تُعاد تدويرها","ستصبح الشمس أكثر حرارة","ستهاجر الحيوانات المفترسة فقط"], ans: 1, feedback: "المحللات تضمن تدوير المواد؛ وبدونها تتوقف دورة الحياة لأن المواد الكيميائية الأساسية ستبقى محبوسة في الأجسام الميتة." },
+    ]
+  },
+  {
+    id: 7,
+    name: "موارد الأرض",
+    icon: "⛰️",
+    desc: "اكتشفي ثروات الأرض وكيفية المحافظة عليها",
+    questions: [
+      { q: "أي مما يلي يعد مثالاً على مورد متجدد (يمكن تعويضه خلال 100 عام أو أقل)؟", opts: ["النفط","ضوء الشمس","الفحم الحجري","المعادن"], ans: 1, feedback: "الموارد المتجددة هي التي يمكن تعويضها خلال 100 عام أو أقل، مثل الطاقة الشمسية والمياه والرياح." },
+      { q: "أي الموارد التالية يصنف كمورد غير متجدد؟", opts: ["الطاقة الكهرومائية","الحيوانات والنباتات","الوقود الأحفوري","الطاقة الحرارية الجوفية"], ans: 2, feedback: "الوقود الأحفوري (النفط والغاز والفحم) يتطلب ملايين السنين ليتكون، لذا لا يمكن تعويضه بسرعة." },
+      { q: "ما هي المشكلة البيئية الرئيسية المرتبطة بحرق الوقود الأحفوري؟", opts: ["تجدد الغابات","تلوث الهواء والأمطار الحمضية","إنتاج الطاقة النظيفة","زيادة رطوبة التربة"], ans: 1, feedback: "يؤدي حرق الوقود الأحفوري إلى إطلاق غازات تسبب الضباب الدخاني والأمطار الحمضية التي تضر بالبيئة." },
+      { q: "يتم الحصول على الطاقة الكهرومائية من خلال استغلال طاقة:", opts: ["الرياح","سقوط المياه من السدود","حرارة باطن الأرض","الانشطار النووي"], ans: 1, feedback: "الطاقة الكهرومائية هي طاقة متجددة تنتج من استثمار قوة الماء الساقط لتدوير التوربينات." },
+      { q: "أي مما يلي يعتبر من فوائد إعادة التدوير؟", opts: ["زيادة استهلاك المواد الخام","تقليل كمية النفايات وحماية الموارد الطبيعية","زيادة تكلفة التصنيع","تشجيع التلوث"], ans: 1, feedback: "إعادة التدوير توفر الطاقة وتطيل عمر الموارد الطبيعية وتقلل النفايات في المكبات." },
+      { q: "ما هي الطريقة التي تساهم في الحفاظ على الموارد من خلال الترشيد؟", opts: ["شراء منتجات مغلفة بطبقات كثيرة","ترك المصابيح مضاءة طوال اليوم","استخدام السلع لفترة أطول وتقليل الاستهلاك","التخلص من الملابس القديمة بسرعة"], ans: 2, feedback: "الترشيد يعني تقليل استخدام الموارد، مما يقلل من الطلب على المواد الخام والنفايات الناتجة." },
+      { q: "تستخدم الخلايا الشمسية لتحويل الطاقة الشمسية مباشرة إلى:", opts: ["طاقة حركية","طاقة كهربائية","طاقة نووية","طاقة كيميائية"], ans: 1, feedback: "تقوم الخلايا الكهروضوئية (الشمسية) بتحويل ضوء الشمس مباشرة إلى كهرباء دون تلوث." },
+      { q: "الطاقة الحرارية الجوفية هي الطاقة المستمدة من:", opts: ["حرق الأخشاب","الرياح القوية","الحرارة الموجودة في باطن الأرض","جريان الأنهار"], ans: 2, feedback: "الطاقة الحرارية الجوفية تستغل الحرارة الناتجة من الصهارة في باطن الأرض لإنتاج البخار والكهرباء." },
+      { q: "أي من النفايات التالية يمكن إعادة تدويره بسهولة؟", opts: ["بقايا الطعام","علب الألمنيوم والزجاج","المناديل الورقية المتسخة","الأخشاب المتعفنة"], ans: 1, feedback: "الألمنيوم والزجاج والورق والبلاستيك هي أكثر المواد شيوعاً في عمليات إعادة التدوير." },
+      { q: "تسمى الغازات التي تحبس الحرارة في الغلاف الجوي وتسبب الاحتباس الحراري بـ:", opts: ["الغازات النبيلة","غازات الدفيئة (مثل CO₂)","الغازات الخاملة","غاز الأكسجين"], ans: 1, feedback: "غازات الدفيئة تعمل كغطاء يحبس الحرارة قريباً من سطح الأرض، مما يرفع درجة حرارة الكوكب." },
+      { q: "ما هو البديل الذي يستخدم طاقة الرياح لإنتاج الكهرباء؟", opts: ["الألواح الشمسية","المحطات النووية","توربينات الرياح (المراوح الضخمة)","السدود المائية"], ans: 2, feedback: "تستخدم مراوح الرياح طاقة الرياح الحركية لتدوير مولدات الكهرباء في المناطق ذات الرياح الدائمة." },
+      { q: "أي من هذه الممارسات تعد مثالاً على إعادة الاستخدام؟", opts: ["صهر الزجاج القديم لصنع زجاج جديد","استخدام أكياس التسوق القماشية عدة مرات","وضع علب البلاستيك في سلة التدوير","إطفاء التكييف عند مغادرة الغرفة"], ans: 1, feedback: "إعادة الاستخدام تعني استخدام المادة نفسها أكثر من مرة لغرضها الأصلي أو لغرض جديد دون معالجة صناعية." },
+      { q: "يتم إنتاج الطاقة النووية من خلال عملية تسمى:", opts: ["الاحتراق","التحلل الحيوي","الانشطار النووي لذرات اليورانيوم","التبخر"], ans: 2, feedback: "تعتمد الطاقة النووية على طاقة الربط في نواة الذرة، حيث تنطلق كميات هائلة من الحرارة عند انشطارها." },
+      { q: "لماذا تعد الطاقة المتجددة (كالشمس والرياح) خياراً أفضل للمستقبل رغم أنها قد تكون مكلفة في البداية؟", opts: ["لأنها لا تنفد أبداً ولا تلوث البيئة بالغازات الضارة","لأنها تعطي طاقة أكبر من النفط بمرتين","لأنها سهلة التخزين في جميع الظروف الجوية","لأنها لا تحتاج إلى أي صيانة دورية"], ans: 0, feedback: "الموارد المتجددة تحمي كوكبنا من الاحتباس الحراري وتوفر أمناً طاقياً مستداماً لا ينتهي." },
+      { q: "لو استمر استهلاك الموارد غير المتجددة (كالنفط) بالمعدلات الحالية دون البحث عن بدائل، فما هي النتيجة الحتمية؟", opts: ["ستزداد كمية النفط في باطن الأرض","ستنضب هذه الموارد وترتفع أسعارها بشكل جنوني مما يسبب أزمات اقتصادية وبيئية","سيصبح الهواء أنقى بمرور الوقت","ستتحول الموارد غير المتجددة إلى موارد متجددة تلقائياً"], ans: 1, feedback: "الموارد غير المتجددة محدودة الكمية، ونضوبها دون وجود بدائل سيعطل الصناعات والحياة اليومية." },
+    ]
+  }
+];
+
+/* ===================================================
+   STATE
+   =================================================== */
+let state = {
+  studentName: "",
+  currentChapterId: null,
+  currentQuestionIdx: 0,
+  score: 0,
+  answers: [],
+  completedChapters: {}
+};
+
+/* ===================================================
+   FLOATING ROSES
+   =================================================== */
+function initRoses() {
+  const container = document.getElementById('floatingRoses');
+  const emojis = ['🌸','🌺','🌷','🌹','💮','🏵️'];
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('span');
+    el.className = 'rose-petal';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.animationDuration = (12 + Math.random() * 18) + 's';
+    el.style.animationDelay = (Math.random() * 20) + 's';
+    el.style.fontSize = (1.2 + Math.random() * 1.4) + 'rem';
+    container.appendChild(el);
+  }
+}
+
+/* ===================================================
+   SCREEN MANAGEMENT
+   =================================================== */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+function showNavbar(chapterName, current, total, score) {
+  const nav = document.getElementById('navbar');
+  nav.classList.add('show');
+  document.getElementById('navChapterName').textContent = chapterName;
+  document.getElementById('navProgressFill').style.width = (current / total * 100) + '%';
+  document.getElementById('navProgressLabel').textContent = current + ' / ' + total;
+  document.getElementById('navScore').textContent = '⭐ ' + score + ' / ' + total;
+}
+
+function hideNavbar() {
+  document.getElementById('navbar').classList.remove('show');
+}
+
+/* ===================================================
+   WELCOME → START
+   =================================================== */
+function startGame() {
+  const nameInput = document.getElementById('studentName').value.trim();
+  if (!nameInput) {
+    document.getElementById('studentName').focus();
+    document.getElementById('studentName').style.borderColor = 'var(--pink-main)';
+    document.getElementById('studentName').style.boxShadow = '0 0 0 4px rgba(233,30,140,0.2)';
+    return;
+  }
+  state.studentName = nameInput;
+  hideNavbar();
+  buildChaptersMap();
+  showScreen('map');
+}
+
+/* ===================================================
+   CHAPTERS MAP
+   =================================================== */
+function buildChaptersMap() {
+  document.getElementById('mapGreeting').textContent =
+    'أهلاً بكِ، ' + state.studentName + ' 🌸';
+
+  const grid = document.getElementById('chaptersGrid');
+  grid.innerHTML = '';
+
+  CHAPTERS.forEach((ch, idx) => {
+    const completed = !!state.completedChapters[ch.id];
+    const card = document.createElement('div');
+    card.className = 'chapter-card' + (completed ? ' completed' : '');
+    card.innerHTML = `
+      <span class="chapter-icon">${ch.icon}</span>
+      <div class="chapter-name">${ch.name}</div>
+      <div class="chapter-desc">${ch.desc}</div>
+      ${completed
+        ? `<div class="chapter-score-badge">✅ ${state.completedChapters[ch.id]} / 15</div>`
+        : `<div class="chapter-badge">15 سؤال</div>`
+      }
+    `;
+    card.onclick = () => startChapter(ch.id);
+    grid.appendChild(card);
+  });
+}
+
+/* ===================================================
+   START CHAPTER
+   =================================================== */
+function startChapter(chapterId) {
+  const chapter = CHAPTERS.find(c => c.id === chapterId);
+  if (!chapter) return;
+
+  // If name not entered yet, go to welcome first
+  if (!state.studentName) { showScreen('welcome'); return; }
+
+  state.currentChapterId = chapterId;
+  state.currentQuestionIdx = 0;
+  state.score = 0;
+  state.answers = [];
+
+  showNavbar(chapter.name, 0, 15, 0);
+  renderQuestion(chapter);
+  showScreen('quiz');
+}
+
+/* ===================================================
+   RENDER QUESTION
+   =================================================== */
+function renderQuestion(chapter) {
+  const idx = state.currentQuestionIdx;
+  const q = chapter.questions[idx];
+
+  document.getElementById('quizChapterTitle').textContent = chapter.icon + ' ' + chapter.name;
+  document.getElementById('quizQCounter').textContent =
+    'السؤال ' + (idx + 1) + ' من ' + chapter.questions.length;
+
+  showNavbar(chapter.name, idx, 15, state.score);
+
+  // خلط الخيارات عشوائياً مع تتبع الإجابة الصحيحة
+  const correctText = q.opts[q.ans];
+  const shuffledOpts = [...q.opts]
+    .map((opt, i) => ({ opt, origIdx: i }))
+    .sort(() => Math.random() - 0.5);
+  const newAnsIdx = shuffledOpts.findIndex(o => o.opt === correctText);
+  // حفظ الخيارات المخلوطة ورقم الإجابة الصحيحة الجديد في state
+  state.shuffledOpts = shuffledOpts.map(o => o.opt);
+  state.shuffledAns = newAnsIdx;
+
+  const letters = ['أ', 'ب', 'ج', 'د'];
+  const container = document.getElementById('questionContainer');
+  container.innerHTML = `
+    <div class="question-card">
+      <div class="question-number">${idx + 1}</div>
+      <div class="question-text">${q.q}</div>
+      <ul class="options-list" id="optionsList">
+        ${state.shuffledOpts.map((opt, i) => `
+          <li class="option-item" onclick="selectAnswer(${i})" data-idx="${i}">
+            <span class="option-letter">${letters[i]}</span>
+            ${opt}
+          </li>
+        `).join('')}
+      </ul>
+      <div class="feedback-msg" id="feedbackMsg"></div>
+      <button class="btn-next" id="btnNext" onclick="nextQuestion()">
+        ${idx + 1 < chapter.questions.length ? 'السؤال التالي ←' : 'عرض النتائج 🏆'}
+      </button>
+    </div>
+  `;
+}
+
+/* ===================================================
+   SELECT ANSWER
+   =================================================== */
+function selectAnswer(selectedIdx) {
+  const chapter = CHAPTERS.find(c => c.id === state.currentChapterId);
+  const q = chapter.questions[state.currentQuestionIdx];
+  const items = document.querySelectorAll('.option-item');
+  const feedback = document.getElementById('feedbackMsg');
+
+  // Disable all options
+  items.forEach(item => item.classList.add('disabled'));
+  items.forEach(item => item.onclick = null);
+
+  const shuffledAns = state.shuffledAns;
+  const correctOptText = state.shuffledOpts[shuffledAns];
+  const isCorrect = selectedIdx === shuffledAns;
+  const feedbackText = q.feedback ? q.feedback : '';
+  if (isCorrect) {
+    state.score++;
+    items[selectedIdx].classList.add('correct');
+    feedback.innerHTML = '✅ إجابة صحيحة! أحسنتِ.' + (feedbackText ? '<br><span class="feedback-detail">' + feedbackText + '</span>' : '');
+    feedback.className = 'feedback-msg correct';
+  } else {
+    items[selectedIdx].classList.add('wrong');
+    items[shuffledAns].classList.add('correct');
+    feedback.innerHTML = '❌ إجابة خاطئة. الإجابة الصحيحة: <strong>' + correctOptText + '</strong>' + (feedbackText ? '<br><span class="feedback-detail">' + feedbackText + '</span>' : '');
+    feedback.className = 'feedback-msg wrong';
+  }
+
+  state.answers.push({ selected: selectedIdx, correct: q.ans, isCorrect });
+  document.getElementById('btnNext').classList.add('show');
+
+  // Update navbar score
+  showNavbar(chapter.name, state.currentQuestionIdx + 1, 15, state.score);
+}
+
+/* ===================================================
+   NEXT QUESTION
+   =================================================== */
+function nextQuestion() {
+  const chapter = CHAPTERS.find(c => c.id === state.currentChapterId);
+  state.currentQuestionIdx++;
+
+  if (state.currentQuestionIdx >= chapter.questions.length) {
+    // Done with chapter
+    state.completedChapters[state.currentChapterId] = state.score;
+    hideNavbar();
+    showResults(chapter);
+  } else {
+    renderQuestion(chapter);
+  }
+}
+
+/* ===================================================
+   SHOW RESULTS
+   =================================================== */
+function showResults(chapter) {
+  const score = state.score;
+  document.getElementById('resultsChapterName').textContent = '📚 ' + chapter.name;
+  document.getElementById('scoreNumber').textContent = score;
+
+  let rank, rankClass, analysis, advice;
+  if (score >= 13) {
+    rank = '🏆 خبير القمة';
+    rankClass = 'rank-expert';
+    analysis = 'إلمام تام بتفاصيل الفصل.';
+    advice = 'أنتِ مستعدة تماماً للفصل التالي!';
+  } else if (score >= 9) {
+    rank = '🔍 باحثة مجتهدة';
+    rankClass = 'rank-good';
+    analysis = 'فهم جيد جداً لمحتوى الفصل.';
+    advice = 'راجعي المفاهيم الصعبة في هذا الفصل قبل الانتقال للقمة التالية.';
+  } else {
+    rank = '🌱 مكتشفة صاعدة';
+    rankClass = 'rank-rising';
+    analysis = 'بداية جيدة! لديكِ مجال للتطوير.';
+    advice = 'حاولي مراجعة ملخص هذا الفصل مرة أخرى لضمان ثبات المعلومة.';
+  }
+
+  document.getElementById('rankBadge').textContent = rank;
+  document.getElementById('rankBadge').className = 'rank-badge ' + rankClass;
+
+  const correct = state.answers.filter(a => a.isCorrect).length;
+  const wrong = state.answers.length - correct;
+
+  document.getElementById('analysisBody').innerHTML = `
+    <tr>
+      <td class="label-cell">الدرجة</td>
+      <td>${score} من 15</td>
+    </tr>
+    <tr>
+      <td class="label-cell">الإجابات الصحيحة</td>
+      <td>${correct} سؤال ✅</td>
+    </tr>
+    <tr>
+      <td class="label-cell">الإجابات الخاطئة</td>
+      <td>${wrong} سؤال ❌</td>
+    </tr>
+    <tr>
+      <td class="label-cell">المستوى</td>
+      <td>${rank}</td>
+    </tr>
+    <tr>
+      <td class="label-cell">نقطة القوة</td>
+      <td>${analysis}</td>
+    </tr>
+    <tr>
+      <td class="label-cell">التوصية</td>
+      <td>${advice}</td>
+    </tr>
+  `;
+
+  showScreen('results');
+}
+
+/* ===================================================
+   SHOW CERTIFICATE
+   =================================================== */
+function showCertificate() {
+  const chapter = CHAPTERS.find(c => c.id === state.currentChapterId);
+  const score = state.score;
+  const total = chapter.questions.length;
+
+  document.getElementById('certStudentName').textContent = state.studentName;
+  document.getElementById('certChapterName').textContent = '\u2728 ' + chapter.name + ' \u2728';
+
+  // النتيجة
+  document.getElementById('certScoreText').textContent = score + ' / ' + total;
+
+  // تحديد المستوى والتحليل
+  let level, strengthText, weaknessText;
+  if (score >= 13) {
+    level = '\ud83c\udfc6 خبيرة القمة';
+    strengthText = 'إلمام تام بتفاصيل الفصل. أنتِ مستعدة تماماً للفصل التالي!';
+    weaknessText = 'لا يوجد جوانب ضعف تذكر. استمري في هذا التميز!';
+  } else if (score >= 9) {
+    level = '\ud83d\udd2c باحثة مجتهدة';
+    strengthText = 'فهم جيد جداً لمعظم مفاهيم الفصل.';
+    weaknessText = 'راجعي المفاهيم التي أخطأتِ فيها قبل الانتقال للقمة التالية.';
+  } else {
+    level = '\ud83c\udf31 مكتشفة صاعدة';
+    strengthText = 'لديكِ رغبة حقيقية في التعلم وهذا أكبر نقطة قوة!';
+    weaknessText = 'حاولي مراجعة ملخص هذا الفصل مرة أخرى لتثبيت المعلومة.';
+  }
+
+  document.getElementById('certLevelBadge').textContent = level;
+
+  // حساب الإجابات الصحيحة والخاطئة بناءً على النتيجة الفعلية
+  const correctAnswers = state.score;
+  const wrongAnswers = total - correctAnswers;
+
+  const tbody = document.getElementById('certStrengthsBody');
+  tbody.innerHTML = `
+    <tr>
+      <td><span class="strength-icon">\u2714</span> نقطة القوة</td>
+      <td>${strengthText}</td>
+    </tr>
+    <tr>
+      <td><span class="weakness-icon">\u2716</span> جانب التحسين</td>
+      <td>${weaknessText}</td>
+    </tr>
+    <tr>
+      <td>\ud83d\udfe2 إجابات صحيحة</td>
+      <td>${correctAnswers} من ${total}</td>
+    </tr>
+    <tr>
+      <td>\ud83d\udd34 إجابات خاطئة</td>
+      <td>${wrongAnswers} من ${total}</td>
+    </tr>
+  `;
+
+  showScreen('certificate');
+}
+
+/* ===================================================
+   PRINT
+   =================================================== */
+function printCertificate() {
+  // أخذ محتوى الشهادة كاملاً
+  const certHTML = document.getElementById('certWrap').innerHTML;
+
+  // فتح نافذة طباعة جديدة
+  const printWin = window.open('', '_blank', 'width=800,height=700');
+  printWin.document.write(`
+    <!DOCTYPE html>
+    <html dir="rtl" lang="ar">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>شهادة إنجاز</title>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: 'Tajawal', Arial, sans-serif;
+          background: #fff;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          padding: 20px;
+          direction: rtl;
+        }
+        .certificate-wrap {
+          background: #fff;
+          border-radius: 24px;
+          border: 3px solid #f48fb1;
+          max-width: 700px;
+          width: 100%;
+          overflow: hidden;
+          box-shadow: none;
+        }
+        .cert-header {
+          background: linear-gradient(135deg, #e91e8c, #f06292);
+          color: white;
+          text-align: center;
+          padding: 28px 36px 22px;
+        }
+        .cert-roses { font-size: 1.8rem; margin-bottom: 8px; }
+        .cert-header-title { font-size: 1.8rem; font-weight: 900; margin-bottom: 6px; }
+        .cert-header-sub { font-size: 1rem; opacity: 0.9; }
+        .cert-body { padding: 28px 36px; text-align: center; }
+        .cert-granted { font-size: 1rem; color: #888; margin-bottom: 8px; }
+        .cert-name { font-size: 2rem; font-weight: 900; color: #e91e8c; margin-bottom: 12px; }
+        .cert-for { font-size: 0.95rem; color: #888; margin-bottom: 8px; }
+        .cert-chapter {
+          font-size: 1.4rem; font-weight: 900;
+          color: #e91e8c;
+          background: #fce4ec;
+          border-radius: 12px;
+          padding: 10px 20px;
+          display: inline-block;
+          margin-bottom: 16px;
+        }
+        .cert-program { font-size: 0.9rem; color: #666; margin-bottom: 16px; line-height: 1.7; }
+        .cert-result-section {
+          background: linear-gradient(135deg, #fff0f6, #fce4ec);
+          border: 2px solid #f8bbd0;
+          border-radius: 16px;
+          padding: 16px 20px;
+          margin: 0 0 16px 0;
+          text-align: center;
+        }
+        .cert-score-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: linear-gradient(135deg, #c2185b, #e91e8c);
+          color: white;
+          border-radius: 50px;
+          padding: 8px 24px;
+          font-size: 1.1rem;
+          font-weight: 900;
+          margin-bottom: 12px;
+        }
+        .cert-level-badge {
+          display: inline-block;
+          background: #fce4ec;
+          color: #c2185b;
+          border: 2px solid #e91e8c;
+          border-radius: 50px;
+          padding: 5px 18px;
+          font-size: 0.95rem;
+          font-weight: 800;
+          margin-bottom: 12px;
+        }
+        .cert-strengths-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 0.85rem;
+          margin-top: 8px;
+        }
+        .cert-strengths-table th {
+          background: #e91e8c;
+          color: white;
+          padding: 8px 12px;
+          font-weight: 700;
+        }
+        .cert-strengths-table td {
+          padding: 8px 12px;
+          border-bottom: 1px solid #f8bbd0;
+          color: #333;
+          text-align: right;
+          line-height: 1.5;
+        }
+        .cert-strengths-table tr:last-child td { border-bottom: none; }
+        .cert-strengths-table tr:nth-child(even) td { background: #fff5f9; }
+        .strength-icon { color: #4caf50; font-weight: 800; }
+        .weakness-icon { color: #e91e8c; font-weight: 800; }
+        .cert-quote {
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #c2185b;
+          background: #fce4ec;
+          border-right: 4px solid #e91e8c;
+          padding: 10px 16px;
+          border-radius: 0 10px 10px 0;
+          margin-bottom: 16px;
+          text-align: right;
+        }
+        .cert-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          padding: 18px 36px 24px;
+          border-top: 2px dashed #f8bbd0;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+        .cert-footer-item { text-align: center; }
+        .cert-footer-label { font-size: 0.8rem; color: #888; margin-bottom: 4px; }
+        .cert-footer-value { font-size: 0.95rem; font-weight: 700; color: #333; }
+        .cert-seal {
+          width: 70px; height: 70px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #c2185b, #e91e8c);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 1.8rem;
+        }
+        @media print {
+          body { padding: 10px; }
+          .certificate-wrap { border: 2px solid #f48fb1; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="certificate-wrap">${certHTML}</div>
+    </body>
+    </html>
+  `);
+  printWin.document.close();
+  // انتظار تحميل الخط ثم طباعة
+  printWin.onload = function() {
+    setTimeout(() => {
+      printWin.focus();
+      printWin.print();
+    }, 600);
+  };
+}
+
+/* ===================================================
+   BACK TO MAP
+   =================================================== */
+function backToMap() {
+  hideNavbar();
+  buildChaptersMap();
+  showScreen('map');
+}
+
+/* ===================================================
+   INIT
+   =================================================== */
+initRoses();
+</script>
+</body>
+</html>
